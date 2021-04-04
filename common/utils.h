@@ -12,5 +12,6 @@ void printCourse(Course course);
 char *trim(char *s);
 char *rtrim(char *s);
 char *ltrim(char *s);
+int max(int x, int y);
 
 #endif

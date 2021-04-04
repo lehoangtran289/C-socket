@@ -38,6 +38,10 @@ void to_upper(char *str) {
     }
 }
 
+int max(int x, int y) {
+    return x > y ? x : y;
+}
+
 int isValidDay(char *day) {
     int l = strlen(day);
     if (l == 0) return 0;

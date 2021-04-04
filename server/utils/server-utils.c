@@ -1,6 +1,7 @@
 #include "server-utils.h"
 #include "../../common/utils.h"
 #include "../../common/constant.h"
+#include "./server-init.h"
 
 #include <ctype.h>
 #include <stdio.h>
@@ -102,4 +103,89 @@ char *getBusyWeek(char *student_id) {
     }
     fflush(stdin);
     return result;
+}
+
+void handleClientRequest(int connfd, char *buf) {
+    char tokens[100][100];
+    int token_cnt = 0;
+    char *pch;
+    pch = strtok(buf, " ");
+    while (pch != NULL) {
+        strcpy(tokens[token_cnt++], pch);
+        pch = strtok(NULL, " ");
+    }
+
+    // logArray(&tokens, token_cnt);
+
+    int signal = atoi(tokens[0]);
+    switch (signal) {
+        case LOGIN: {
+            puts("Login request");
+            Account acc;
+            if (token_cnt != 3) {
+                send(connfd, "server error, login failed", 28, 0);
+                break;
+            }
+            strcpy(acc.student_id, tokens[1]);
+            strcpy(acc.password, tokens[2]);
+            if (checkLogin(acc) == 0) {
+                send(connfd, "login failed", 14, 0);
+                break;
+            }
+            send(connfd, "login success", 15, 0);
+        } break;
+
+        case SEARCHBYDAY: {
+            puts("Search schedule by day request");
+            if (token_cnt != 3) {
+                send(connfd, "server error\n", 14, 0);
+                break;
+            }
+            char *day = (char *)malloc(100 * sizeof(char));
+            char student_id[MAXLINE];
+            strcpy(student_id, tokens[1]);
+            strcpy(day, tokens[2]);
+
+            char *result = (char *)malloc(MAXLINE * sizeof(char));
+            strcpy(result, searchCoursesByDay(student_id, day));
+
+            send(connfd, result, strlen(result), 0);
+        } break;
+
+        case SEARCHALL: {
+            puts("Search all schedule request");
+            if (token_cnt != 2) {
+                send(connfd, "server error\n", 14, 0);
+                break;
+            }
+            char student_id[MAXLINE];
+            strcpy(student_id, tokens[1]);
+
+            char *result = (char *)malloc(MAXLINE * sizeof(char));
+            strcpy(result, getAllCourses(student_id));
+
+            send(connfd, result, strlen(result), 0);
+        } break;
+
+        case DISPLAYBUSY: {
+            puts("Display busy week request");
+            if (token_cnt != 2) {
+                send(connfd, "server error\n", 14, 0);
+                break;
+            }
+            char student_id[MAXLINE];
+            strcpy(student_id, tokens[1]);
+
+            char *result = (char *)malloc(MAXLINE * sizeof(char));
+            strcpy(result, getBusyWeek(student_id));
+
+            send(connfd, result, strlen(result), 0);
+        } break;
+
+        default:
+            send(connfd, "wrong request!\n", 30, 0);
+            break;
+    }
+    fflush(stdout);
+    bzero(buf, 2000);
 }

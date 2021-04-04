@@ -5,6 +5,6 @@
 #define SERV_PORT 3000 /*port*/
 #define LISTENQ 8      /*maximum number of client connections */
 
-void initServer(int argc, char **argv);
+void initMultiplexingServer(int argc, char **argv);
 
 #endif

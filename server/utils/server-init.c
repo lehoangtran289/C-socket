@@ -10,7 +10,13 @@
 int listenfd;
 struct sockaddr_in servaddr;
 
-void initServer(int argc, char **argv) {
+socklen_t len;
+fd_set masterfds;  // tập readfds để check các socket, 1 tập để lưu lại nhưng thay đổi của tập readfds.
+fd_set readfds;    // file descriptor list for select()
+int max_fd;
+struct timeval timeout;
+
+void initMultiplexingServer(int argc, char **argv) {
     // creation of the socket
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -23,20 +29,13 @@ void initServer(int argc, char **argv) {
         listen(listenfd, LISTENQ);
     }
 
-    // //Assign initial value for the array of connection socket
-    // for (...) client[i] = -1;
-    // //Assign initial value for the fd_set
-    // FD_ZERO(...);
-    // //Set bit for listenfd
-    // FD_SET(listenfd, ...)
+    // socket-select config
+    len = sizeof(struct sockaddr_in);
+    FD_ZERO(&masterfds);           // clear master set
+    FD_ZERO(&readfds);             // clear temp set
+    FD_SET(listenfd, &masterfds);  // add the listenerfd to the master set
+    max_fd = listenfd;         // keep track of the biggest file descriptor
 
-    // while (1) {
-    //     if (bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) == 0) {
-    //         listen(listenfd, LISTENQ);
-    //         break;
-    //     } else {
-    //         system("fuser -n tcp -k 3000");
-    //         break;
-    //     }
-    // }
+    timeout.tv_sec = 90;  // Server listens in 90s, if timeout = NULL then select() runs forever
+    timeout.tv_usec = 0;
 }
