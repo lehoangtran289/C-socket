@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "reader.h": "c",
+        "struct.h": "c",
+        "utils.h": "c",
+        "in.h": "c",
+        "server-init.h": "c",
+        "socket.h": "c",
+        "constant.h": "c",
+        "types.h": "c"
+    }
+}
