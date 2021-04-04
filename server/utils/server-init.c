@@ -19,8 +19,16 @@ void initServer(int argc, char **argv) {
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
     servaddr.sin_port = htons(SERV_PORT);
 
-    if (bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) == 0) 
+    if (bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) == 0) {
         listen(listenfd, LISTENQ);
+    }
+
+    // //Assign initial value for the array of connection socket
+    // for (...) client[i] = -1;
+    // //Assign initial value for the fd_set
+    // FD_ZERO(...);
+    // //Set bit for listenfd
+    // FD_SET(listenfd, ...)
 
     // while (1) {
     //     if (bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) == 0) {

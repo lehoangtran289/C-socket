@@ -29,14 +29,6 @@ void sig_chld(int signo) {
     return;
 }
 
-char *choppy(char *s) {
-    char *n = malloc(strlen(s ? s : "\n"));
-    if (s)
-        strcpy(n, s);
-    n[strlen(n) - 1] = '\0';
-    return n;
-}
-
 int main(int argc, char **argv) {
     // char buf[MAXLINE];
     char *buf = (char *)malloc(MAXLINE * sizeof(char));
@@ -56,7 +48,8 @@ int main(int argc, char **argv) {
     printf("%s\n", "Server running...waiting for connections.");
     while (1) {
         clilen = sizeof(cliaddr);
-        connfd = accept(listenfd, (struct sockaddr *)&cliaddr, &clilen);
+        connfd = accept(listenfd, (struct sockaddr *)&cliaddr, &clilen);  // accept incoming connection
+
         char ip[100];
         inet_ntop(AF_INET, &(cliaddr.sin_addr), ip, 100);
         printf("%s %s:%d\n", "Received request at ", ip, cliaddr.sin_port);
@@ -79,11 +72,12 @@ int main(int argc, char **argv) {
                     pch = strtok(NULL, " ");
                 }
 
-                logArray(&tokens, token_cnt);
+                // logArray(&tokens, token_cnt);
 
                 int signal = atoi(tokens[0]);
                 switch (signal) {
                     case LOGIN: {
+                        puts("Login request");
                         Account acc;
                         if (token_cnt != 3) {
                             send(connfd, "server error, login failed", 28, 0);
@@ -99,8 +93,9 @@ int main(int argc, char **argv) {
                     } break;
 
                     case SEARCHBYDAY: {
+                        puts("Search schedule by day request");
                         if (token_cnt != 3) {
-                            send(connfd, "server error", 14, 0);
+                            send(connfd, "server error\n", 14, 0);
                             break;
                         }
                         char *day = (char *)malloc(100 * sizeof(char));
@@ -115,8 +110,9 @@ int main(int argc, char **argv) {
                     } break;
 
                     case SEARCHALL: {
+                        puts("Search all schedule request");
                         if (token_cnt != 2) {
-                            send(connfd, "server error", 14, 0);
+                            send(connfd, "server error\n", 14, 0);
                             break;
                         }
                         char student_id[MAXLINE];
@@ -129,8 +125,9 @@ int main(int argc, char **argv) {
                     } break;
 
                     case DISPLAYBUSY: {
+                        puts("Display busy week request");
                         if (token_cnt != 2) {
-                            send(connfd, "server error", 14, 0);
+                            send(connfd, "server error\n", 14, 0);
                             break;
                         }
                         char student_id[MAXLINE];
@@ -140,17 +137,17 @@ int main(int argc, char **argv) {
                         strcpy(result, getBusyWeek(student_id));
 
                         send(connfd, result, strlen(result), 0);
-
                     } break;
 
                     default:
+                        send(connfd, "wrong request!\n", 30, 0);
                         break;
                 }
                 fflush(stdout);
                 bzero(buf, 2000);
             }
             if (n < 0) {
-                perror("Read error");
+                perror("Read error\n");
                 exit(1);
             }
             close(connfd);

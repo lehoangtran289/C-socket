@@ -18,6 +18,7 @@ extern int sockfd;
 int main(int argc, char **argv) {
     initClient(argc, argv);
 
+    // login
     while (1) {
         int choice, isLogin = 0;
         printf("1. Login\n");
@@ -61,12 +62,12 @@ int main(int argc, char **argv) {
             }
         } while (choice != 2 && isLogin != 1);
 
+        // login success, handle request
         printf("\n\n----Login Success----\n\n\tMENU\n");
         printf("1. Search course registration by day\n");
         printf("2. Display all registrations\n");
         printf("3. Display busy schedule\n");
         printf("4. Exit\n");
-
         do {
             printf("\nInput a choice: ");
             scanf("%d", &choice);
@@ -116,9 +117,7 @@ int main(int argc, char **argv) {
                     break;
             }
         } while (choice != 4);
-
         return 0;
     }
-
     exit(0);
 }
