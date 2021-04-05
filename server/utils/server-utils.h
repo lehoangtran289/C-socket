@@ -10,5 +10,6 @@ char *searchCoursesByDay(char *student_id, char *day);
 char *getAllCourses(char *student_id);
 char *getBusyWeek(char *student_id);
 void handleClientRequest(int connfd, char *buf);
+void sendToCLient(int connfd, char *message);
 
 #endif

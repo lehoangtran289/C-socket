@@ -27,6 +27,9 @@ void initMultiplexingServer(int argc, char **argv) {
 
     if (bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) == 0) {
         listen(listenfd, LISTENQ);
+    } else {
+        perror("Bind error!");
+        exit(0);
     }
 
     // socket-select config

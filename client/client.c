@@ -6,10 +6,10 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#include "../struct/reader.h"
-#include "../struct/struct.h"
 #include "../common/constant.h"
 #include "../common/utils.h"
+#include "../struct/reader.h"
+#include "../struct/struct.h"
 #include "./utils/client-init.h"
 #include "./utils/client-utils.h"
 
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
                         scanf("%s", acc.password);
 
                         char data[MAXLINE];
-                        strcat(data, acc.student_id);
+                        strcpy(data, acc.student_id);
                         strcat(data, " ");
                         strcat(data, acc.password);
 

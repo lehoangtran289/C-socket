@@ -105,6 +105,10 @@ char *getBusyWeek(char *student_id) {
     return result;
 }
 
+void sendToCLient(int connfd, char message[]) {
+    send(connfd, message, strlen(message) + 1, 0);
+}
+
 void handleClientRequest(int connfd, char *buf) {
     char tokens[100][100];
     int token_cnt = 0;
@@ -123,22 +127,22 @@ void handleClientRequest(int connfd, char *buf) {
             puts("Login request");
             Account acc;
             if (token_cnt != 3) {
-                send(connfd, "server error, login failed", 28, 0);
+                sendToCLient(connfd, "FAIL Wrong request format! Must be in form \"1 [id] [password]\"\n");
                 break;
             }
             strcpy(acc.student_id, tokens[1]);
             strcpy(acc.password, tokens[2]);
             if (checkLogin(acc) == 0) {
-                send(connfd, "login failed", 14, 0);
+                sendToCLient(connfd, "FAIL login failed\n");
                 break;
             }
-            send(connfd, "login success", 15, 0);
+            sendToCLient(connfd, "OK login success\n");
         } break;
 
         case SEARCHBYDAY: {
             puts("Search schedule by day request");
             if (token_cnt != 3) {
-                send(connfd, "server error\n", 14, 0);
+                sendToCLient(connfd, "FAIL Wrong request format! Must be in form \"2 [id] [day]\"\n");
                 break;
             }
             char *day = (char *)malloc(100 * sizeof(char));
@@ -155,7 +159,7 @@ void handleClientRequest(int connfd, char *buf) {
         case SEARCHALL: {
             puts("Search all schedule request");
             if (token_cnt != 2) {
-                send(connfd, "server error\n", 14, 0);
+                sendToCLient(connfd, "FAIL Wrong request format! Must be in form \"3 [id]\"\n");
                 break;
             }
             char student_id[MAXLINE];
@@ -170,7 +174,7 @@ void handleClientRequest(int connfd, char *buf) {
         case DISPLAYBUSY: {
             puts("Display busy week request");
             if (token_cnt != 2) {
-                send(connfd, "server error\n", 14, 0);
+                sendToCLient(connfd, "FAIL Wrong request format! Must be in form \"4 [id]\"\n");
                 break;
             }
             char student_id[MAXLINE];
@@ -183,7 +187,7 @@ void handleClientRequest(int connfd, char *buf) {
         } break;
 
         default:
-            send(connfd, "wrong request!\n", 30, 0);
+            send(connfd, "FAIL wrong request!\n", 30, 0);
             break;
     }
     fflush(stdout);

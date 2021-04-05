@@ -8,6 +8,8 @@
         "socket.h": "c",
         "constant.h": "c",
         "types.h": "c",
-        "server-utils.h": "c"
+        "server-utils.h": "c",
+        "*.tcc": "c",
+        "fstream": "c"
     }
 }

@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
         memcpy(&readfds, &masterfds, sizeof(masterfds));  // Copy masterfds into readfds -> wait for events
 
         int n_select;
-        if ((n_select = select(max_fd + 1, &readfds, NULL, NULL, &timeout)) < 0) {  // Hàm này sẽ block chương trình đến khi có 1 sự kiên ready to read xảy ra
+        if ((n_select = select(max_fd + 1, &readfds, NULL, NULL, NULL)) < 0) {  // Hàm này sẽ block chương trình đến khi có 1 sự kiên ready to read xảy ra
             perror("Server-select() error...");
             exit(0);
         } else if (n_select == 0) {
@@ -55,9 +55,7 @@ int main(int argc, char **argv) {
                     if (i == listenfd) {
                         int newCon = accept(listenfd, (struct sockaddr *)&cliaddr, &len);  // handle new connections
                         printf("\nNew connection \n");
-                        char ip[100];
-                        inet_ntop(AF_INET, &(cliaddr.sin_addr), ip, 100);
-                        printf("%s %s:%d\n", "Received request at ", ip, cliaddr.sin_port);
+                        printf("%s %s:%i\n", "Receiving request at", inet_ntoa(cliaddr.sin_addr), ntohs(cliaddr.sin_port));
                         FD_SET(newCon, &masterfds);    // add to master set
                         max_fd = max(newCon, max_fd);  // keep track of maximum fd
                     } else {                           // handle data from a client
